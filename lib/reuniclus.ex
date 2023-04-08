@@ -14,8 +14,11 @@ defmodule Reuniclus do
     children = [
       Reuniclus.EventDispatcher.Supervisor,
       Reuniclus.Database.Repo,
-      Reuniclus.ThreadUnlocker
+      {Cachex, name: :reuniclus_threads},
+      Reuniclus.ThreadUnlocker,
+      Reuniclus.ThreadAgeFlagger
     ]
+
     options = [strategy: :rest_for_one, name: Reuniclus.Supervisor]
     Supervisor.start_link(children, options)
   end

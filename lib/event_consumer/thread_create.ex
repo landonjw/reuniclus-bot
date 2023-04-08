@@ -4,49 +4,52 @@ defmodule Reuniclus.EventConsumer.ThreadCreate do
   require Logger
   alias Nostrum.Api
   alias Reuniclus.Bridge.ThreadBridge
-  alias Reuniclus.ThreadHelper
   alias Reuniclus.Database.Thread
+  alias Reuniclus.Database.Repo
+  alias Reuniclus.Bridge.ForumBridge
+  alias Reuniclus.Database.Forum
 
   def handle(channel) do
-    if is_server_listing_thread(channel) and channel.newly_created do
-      spawn(fn -> send_bot_message(channel) end)
-      thread = %Thread{owner_id: channel.owner_id, channel_id: channel.id, is_locked: false, is_newly_created: true}
-      ThreadBridge.create_thread(thread)
-      spawn(fn -> lock_thread_and_delete_message(channel) end)
+    if is_forum_thread(channel) and channel.newly_created do
+      Logger.info("Creating new thread for channel id #{channel.id}")
+
+      thread = %Thread{
+        owner_id: channel.owner_id,
+        channel_id: channel.id,
+        is_locked: false,
+        is_newly_created: true
+      }
+
+      ThreadBridge.create(thread)
+
+      forum = Forum |> ForumBridge.with_id(channel.parent_id) |> Repo.one()
+
+      if forum.bump_prevention do
+        spawn(fn -> send_bot_message(channel) end)
+      end
     end
   end
 
   defp send_bot_message(channel) do
     Process.sleep(1000)
-    posting_cool_down = Application.fetch_env!(:reuniclus, :unlock_interval_minutes)
-    bot_lock_cool_down = Application.fetch_env!(:reuniclus, :bot_lock_cool_down_minutes)
-    message = "Each time a new post is created, this thread will lock for #{posting_cool_down} minute(s).\n" <>
-              "This thread will lock and this message will be deleted in #{bot_lock_cool_down} minute(s)."
+
+    posting_cool_down =
+      Application.get_env(:reuniclus, BumpPrevention)[:forum_lock_duration_minutes]
+
+    new_post_lock_timeout =
+      Application.get_env(:reuniclus, BumpPrevention)[:new_post_lock_timeout_minutes]
+
+    message =
+      "Each time a new post is created, this thread will lock for #{posting_cool_down} minute(s).\n" <>
+        "This thread will lock and this message will be deleted in #{new_post_lock_timeout} minute(s)."
+
     Api.create_message(channel.id, message)
   end
 
-  defp is_server_listing_thread(channel) do
-    channel.parent_id == Application.fetch_env!(:reuniclus, :server_listing_channel_id)
-  end
-
-  defp lock_thread_and_delete_message(channel) do
-    bot_lock_cool_down = Application.fetch_env!(:reuniclus, :bot_lock_cool_down_minutes)
-    Process.sleep(bot_lock_cool_down * 60000)
-    thread = ThreadBridge.get_thread_from_channel_id(channel.id)
-    ThreadBridge.flag_thread_old(thread)
-    ThreadHelper.lock_thread(thread)
-    delete_bot_message(channel.id)
-  end
-
-  defp delete_bot_message(channel_id) do
-    {:ok, messages} = Api.get_channel_messages(channel_id, 50)
-    Enum.each(messages, fn message -> delete_message_if_bot(message) end)
-  end
-
-  defp delete_message_if_bot(message) do
-    if message.author.bot do
-      Logger.info("Deleting bot message...")
-      Api.delete_message(message)
-    end
+  defp is_forum_thread(channel) do
+    Application.fetch_env!(:reuniclus, :forum_channels)
+    |> Enum.filter(fn forum_channel -> forum_channel.id == channel.parent_id end)
+    |> Enum.empty?()
+    |> Kernel.not()
   end
 end

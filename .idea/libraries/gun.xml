@@ -11,9 +11,15 @@
       <root url="file://$PROJECT_DIR$/_build/test/lib/gun/ebin" />
       <root url="file://$PROJECT_DIR$/_build/dev/lib/gun/ebin" />
       <root url="file://$PROJECT_DIR$/_build/test/lib/gun/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/gun/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/gun/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/gun/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/gun/ebin" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/deps/gun/src" />
+      <root url="file://$PROJECT_DIR$/deps/gun/src" />
       <root url="file://$PROJECT_DIR$/deps/gun/src" />
       <root url="file://$PROJECT_DIR$/deps/gun/src" />
       <root url="file://$PROJECT_DIR$/deps/gun/src" />

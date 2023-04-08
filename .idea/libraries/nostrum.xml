@@ -15,6 +15,10 @@
       <root url="file://$PROJECT_DIR$/_build/test/lib/nostrum/ebin" />
       <root url="file://$PROJECT_DIR$/_build/dev/lib/nostrum/ebin" />
       <root url="file://$PROJECT_DIR$/_build/test/lib/nostrum/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/nostrum/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/nostrum/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/nostrum/ebin" />
+      <root url="file://$PROJECT_DIR$/_build/dev/lib/nostrum/ebin" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
@@ -30,6 +34,8 @@
       <root url="file://$PROJECT_DIR$/deps/nostrum/src" />
       <root url="file://$PROJECT_DIR$/deps/nostrum/lib" />
       <root url="file://$PROJECT_DIR$/deps/nostrum/src" />
+      <root url="file://$PROJECT_DIR$/deps/nostrum/lib" />
+      <root url="file://$PROJECT_DIR$/deps/nostrum/lib" />
       <root url="file://$PROJECT_DIR$/deps/nostrum/lib" />
     </SOURCES>
   </library>

@@ -3,19 +3,30 @@ defmodule Reuniclus.EventConsumer.InteractionCreate do
 
   require Logger
   alias Nostrum.Struct.Interaction
+
   alias Reuniclus.Command.{
-    Echo
+    Eval,
+    Whitelist,
+    GlobalWhitelist
   }
 
-  def handle(%Interaction{data: %{name: "echo"}} = interaction) do
-    Logger.info("Dispatching to echo command")
-    Echo.handle(interaction)
+  def handle(%Interaction{data: %{name: "eval"}} = interaction) do
+    Eval.handle(interaction)
   end
 
-  @spec handle(Interaction.t()) :: :ok | nil
+  def handle(%Interaction{data: %{name: "whitelist"}} = interaction) do
+    Whitelist.handle(interaction)
+  end
+
+  def handle(%Interaction{data: %{name: "globalwhitelist"}} = interaction) do
+    GlobalWhitelist.handle(interaction)
+  end
+
   def handle(interaction) do
-    Logger.info("Encountered unknown interaction '#{interaction.data.name}'.")
-    Reuniclus.InteractionHelper.respond_message(interaction, "Unknown command. How did I get here?")
+    Logger.warn("Encountered unknown interaction '#{interaction.data.name}'")
+    Reuniclus.InteractionHelper.respond_message(
+      interaction,
+      "Unknown command. How did I get here?"
+    )
   end
-
 end

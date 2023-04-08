@@ -3,22 +3,22 @@ defmodule Reuniclus.Commands do
 
   require Logger
   alias Nostrum.Api
+
   alias Reuniclus.Command.{
-    Echo
+    Eval,
+    Whitelist,
+    GlobalWhitelist
   }
 
-  defp get_guild_id() do
-    Application.fetch_env!(:reuniclus, :guild_id)
-  end
-
-  defp register_command(command) do
-    guild_id = get_guild_id()
+  defp register_command(guild_id, command) do
     Api.create_guild_application_command(guild_id, command)
   end
 
-  def register_commands() do
+  def register_commands(guild_id) do
     Logger.info("Registering commands...")
-    register_command(Echo.command())
-    Logger.info("Commands registered.")
+    register_command(guild_id, Eval.command())
+    register_command(guild_id, Whitelist.command())
+    register_command(guild_id, GlobalWhitelist.command())
+    Logger.info("Commands registered for guild #{guild_id}")
   end
 end

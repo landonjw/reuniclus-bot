@@ -11,25 +11,22 @@ defmodule Reuniclus.EventDispatcher.Supervisor do
 
     Supervisor.init(children, strategy: :one_for_one)
   end
-
 end
 
 defmodule Reuniclus.EventDispatcher do
   use Nostrum.Consumer
 
   alias Reuniclus.EventConsumer.{
-    Ready,
     InteractionCreate,
     MessageCreate,
-    ThreadCreate
+    ThreadCreate,
+    GuildAvailable,
+    GuildAuditLogEntryCreate,
+    Ready
   }
 
   def start_link do
     Consumer.start_link(__MODULE__)
-  end
-
-  def handle_event({:READY, _msg, _ws_state}) do
-    Ready.handle()
   end
 
   def handle_event({:MESSAGE_CREATE, msg, _ws_state}) do
@@ -42,6 +39,18 @@ defmodule Reuniclus.EventDispatcher do
 
   def handle_event({:THREAD_CREATE, channel, _ws_state}) do
     ThreadCreate.handle(channel)
+  end
+
+  def handle_event({:GUILD_AVAILABLE, guild, _ws_state}) do
+    GuildAvailable.handle(guild)
+  end
+
+  def handle_event({:GUILD_AUDIT_LOG_ENTRY_CREATE, guild, _ws_state}) do
+    GuildAuditLogEntryCreate.handle(guild)
+  end
+
+  def handle_event({:READY, _event, _ws_state}) do
+    Ready.handle()
   end
 
   # Default event handler, if you don't include this, your consumer WILL crash if
