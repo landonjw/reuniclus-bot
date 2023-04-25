@@ -5,7 +5,6 @@ defmodule Reuniclus.Commands do
   alias Nostrum.Api
 
   alias Reuniclus.Command.{
-    Eval,
     Whitelist,
     GlobalWhitelist
   }
@@ -16,7 +15,6 @@ defmodule Reuniclus.Commands do
 
   def register_commands(guild_id) do
     Logger.info("Registering commands...")
-    register_command(guild_id, Eval.command())
     register_command(guild_id, Whitelist.command())
     register_command(guild_id, GlobalWhitelist.command())
     Logger.info("Commands registered for guild #{guild_id}")

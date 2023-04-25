@@ -5,14 +5,9 @@ defmodule Reuniclus.EventConsumer.InteractionCreate do
   alias Nostrum.Struct.Interaction
 
   alias Reuniclus.Command.{
-    Eval,
     Whitelist,
     GlobalWhitelist
   }
-
-  def handle(%Interaction{data: %{name: "eval"}} = interaction) do
-    Eval.handle(interaction)
-  end
 
   def handle(%Interaction{data: %{name: "whitelist"}} = interaction) do
     Whitelist.handle(interaction)
@@ -24,6 +19,7 @@ defmodule Reuniclus.EventConsumer.InteractionCreate do
 
   def handle(interaction) do
     Logger.warn("Encountered unknown interaction '#{interaction.data.name}'")
+
     Reuniclus.InteractionHelper.respond_message(
       interaction,
       "Unknown command. How did I get here?"
