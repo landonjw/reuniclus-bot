@@ -162,8 +162,6 @@ defmodule Reuniclus.Command.Whitelist do
         |> ThreadWhitelistBridge.with_user_id(target_user_id)
         |> Repo.one()
 
-      IO.inspect(user_whitelist)
-
       if is_nil(user_whitelist) do
         respond_message(interaction, "User is not whitelisted in this thread")
       else

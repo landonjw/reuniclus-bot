@@ -41,7 +41,7 @@ defmodule Reuniclus.EventConsumer.MessageCreate do
     {:ok, key_exists?} = Cachex.exists?(:reuniclus_threads, channel_id)
 
     if key_exists? do
-      IO.puts "Returning cached thread"
+      Logger.info("Returning cached thread")
       {:ok, thread} = Cachex.get(:reuniclus_threads, channel_id)
       thread
     else

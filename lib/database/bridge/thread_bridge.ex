@@ -4,9 +4,19 @@ defmodule Reuniclus.Bridge.ThreadBridge do
   import Ecto.Changeset
   alias Reuniclus.Database.ThreadWhitelist
   alias Reuniclus.Database.Repo
+  alias Reuniclus.Database.Thread
 
   def create(thread) do
-    Repo.insert(%{thread | is_newly_created: true, last_update: get_utc_now(), time_created: get_utc_now()})
+    Repo.insert(%{
+      thread
+      | is_newly_created: true,
+        last_update: get_utc_now(),
+        time_created: get_utc_now()
+    })
+  end
+
+  def create_retroactive(thread) do
+    Repo.insert(%{thread | last_update: get_utc_now(), time_created: get_utc_now()})
   end
 
   def with_id(query, id) do
@@ -81,5 +91,23 @@ defmodule Reuniclus.Bridge.ThreadBridge do
 
   defp get_utc_now() do
     DateTime.utc_now() |> DateTime.truncate(:second)
+  end
+
+  def get_channel_ids_without_thread(channel_ids) do
+    if Enum.empty?(channel_ids) do
+      []
+    else
+      values =
+        channel_ids
+        |> Enum.map(fn id -> "(#{id})" end)
+        |> Enum.join(",")
+
+      query = "SELECT Candidate.Id FROM (VALUES #{values}) AS Candidate(Id)
+               LEFT JOIN Thread ON Thread.Channel_Id = Candidate.Id
+               WHERE Thread.Id IS NULL;"
+
+      {:ok, %{:rows => missing_channel_ids}} = Repo.query(query)
+      List.flatten(missing_channel_ids)
+    end
   end
 end
