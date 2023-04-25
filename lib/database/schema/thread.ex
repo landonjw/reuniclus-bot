@@ -7,6 +7,7 @@ defmodule Reuniclus.Database.Thread do
     field(:channel_id, :integer)
     field(:last_update, :utc_datetime)
     field(:is_locked, :boolean)
+    field(:forum_id, :integer)
     field(:is_newly_created, :boolean)
     field(:time_created, :utc_datetime)
   end
